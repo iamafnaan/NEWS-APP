@@ -1,5 +1,5 @@
-const axios = require('axios');
-const { BASE_URL, SOURCES } = require('../config/newsApi');
+import axios from 'axios';
+import { BASE_URL, SOURCES } from '../config/newsApi.js';
 
 class NewsService {
   static async getTopHeadlines(country) {
@@ -51,4 +51,4 @@ class NewsService {
   }
 }
 
-module.exports = NewsService;
+export default NewsService;

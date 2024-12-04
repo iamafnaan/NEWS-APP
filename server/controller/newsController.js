@@ -1,5 +1,5 @@
 
-import { getTopHeadlines as _getTopHeadlines, searchArticles } from '../services/newsService';
+import { getTopHeadlines as _getTopHeadlines, searchArticles } from '../services/newsService.js';
 
 
 class NewsController {

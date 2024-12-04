@@ -1,8 +1,8 @@
 
-const express = require('express');
-const NewsService = require('../services/newsService');
+import { Router } from 'express';
+import NewsService from '../services/newsService.js';
 
-const router = express.Router();
+const router = Router();
 
 // Route for top headlines by country
 router.get('/top-headlines', async (req, res) => {
@@ -54,4 +54,4 @@ router.get('/query', async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
