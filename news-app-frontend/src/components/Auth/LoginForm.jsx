@@ -10,9 +10,22 @@ import {
   Box,
   InputAdornment,
   IconButton,
+  createTheme,
+  ThemeProvider,
 } from "@mui/material";
 import { Visibility, VisibilityOff, Mail, Lock } from "@mui/icons-material";
-import { authService } from "../../services/authService";
+import { auth, googleProvider, signInWithPopup } from "../firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+
+const theme = createTheme({
+  palette: {
+    primary: { main: "#3f51b5" },
+    secondary: { main: "#ff4081" },
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
+});
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -29,54 +42,43 @@ export function LoginForm() {
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
-    setError(""); // Clear errors when switching tabs
+    setError("");
     setEmail("");
     setPassword("");
     setConfirmPassword("");
   };
 
+  // Handle Sign In
   const handleSignIn = async (event) => {
     event.preventDefault();
     setIsLoading(true);
     setError("");
 
     try {
-      await authService.signIn(email, password);
+      await signInWithEmailAndPassword(auth, email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError(err.message);
+      setError("Invalid email or password.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Handle Sign Up
   const handleSignUp = async (event) => {
     event.preventDefault();
     setIsLoading(true);
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Passwords do not match.");
       setIsLoading(false);
       return;
     }
 
     try {
-      await authService.signUp(email, password);
+      await createUserWithEmailAndPassword(auth, email, password);
       navigate("/dashboard");
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    setError("");
-
-    try {
-      await authService.signInWithGoogle();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -85,194 +87,171 @@ export function LoginForm() {
   };
 
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      minHeight="100vh"
-      bgcolor="background.default"
-      px={2}
-    >
+    <ThemeProvider theme={theme}>
       <Box
-        maxWidth={400}
-        width="100%"
-        bgcolor="background.paper"
-        borderRadius={2}
-        p={3}
-        boxShadow={4}
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <Typography variant="h4" align="center" gutterBottom>
-          Welcome to the App
-        </Typography>
-        <Typography variant="body2" align="center" color="textSecondary" gutterBottom>
-          Sign in or register to get started
-        </Typography>
+        <Box maxWidth={400} width="100%" bgcolor="background.paper" borderRadius={4} p={4} boxShadow={10}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Welcome to the App
+          </Typography>
+          <Typography variant="body2" align="center" color="textSecondary" gutterBottom>
+            Sign in or register to get started
+          </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+          {error && <Alert severity="error">{error}</Alert>}
 
-        <Tabs value={activeTab} onChange={handleTabChange} centered sx={{ mb: 3 }}>
-          <Tab label="Login" />
-          <Tab label="Register" />
-        </Tabs>
+          <Tabs value={activeTab} onChange={handleTabChange} centered>
+            <Tab label="Login" />
+            <Tab label="Register" />
+          </Tabs>
 
-        {activeTab === 0 && (
-          <form onSubmit={handleSignIn}>
-            <TextField
-              label="Email"
-              fullWidth
-              margin="normal"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Mail fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-              disabled={isLoading}
-            />
-            <TextField
-              label="Password"
-              fullWidth
-              margin="normal"
-              type={signInPasswordVisible ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setSignInPasswordVisible(!signInPasswordVisible)}
-                      size="small"
-                      edge="end"
-                    >
-                      {signInPasswordVisible ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              disabled={isLoading}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              disabled={isLoading}
-              sx={{ mt: 2 }}
-            >
-              {isLoading ? "Loading..." : "Sign In"}
-            </Button>
-          </form>
-        )}
+          {activeTab === 0 && (
+            <form onSubmit={handleSignIn}>
+              <TextField
+                label="Email"
+                fullWidth
+                margin="normal"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Mail />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                label="Password"
+                fullWidth
+                margin="normal"
+                type={signInPasswordVisible ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setSignInPasswordVisible(!signInPasswordVisible)}
+                        edge="end"
+                      >
+                        {signInPasswordVisible ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                disabled={isLoading}
+                sx={{ marginTop: 2 }}
+              >
+                {isLoading ? "Loading..." : "Sign In"}
+              </Button>
+            </form>
+          )}
 
-        {activeTab === 1 && (
-          <form onSubmit={handleSignUp}>
-            <TextField
-              label="Email"
-              fullWidth
-              margin="normal"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Mail fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-              disabled={isLoading}
-            />
-            <TextField
-              label="Password"
-              fullWidth
-              margin="normal"
-              type={signUpPasswordVisible ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setSignUpPasswordVisible(!signUpPasswordVisible)}
-                      size="small"
-                      edge="end"
-                    >
-                      {signUpPasswordVisible ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              disabled={isLoading}
-            />
-            <TextField
-              label="Confirm Password"
-              fullWidth
-              margin="normal"
-              type={confirmPasswordVisible ? "text" : "password"}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Lock fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-                      size="small"
-                      edge="end"
-                    >
-                      {confirmPasswordVisible ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-              disabled={isLoading}
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              disabled={isLoading}
-              sx={{ mt: 2 }}
-            >
-              {isLoading ? "Loading..." : "Sign Up"}
-            </Button>
-          </form>
-        )}
-
-        <Button
-          fullWidth
-          variant="outlined"
-          color="secondary"
-          onClick={handleGoogleSignIn}
-          disabled={isLoading}
-          sx={{ mt: 3 }}
-        >
-          Continue with Google
-        </Button>
+          {activeTab === 1 && (
+            <form onSubmit={handleSignUp}>
+              <TextField
+                label="Email"
+                fullWidth
+                margin="normal"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Mail />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                label="Password"
+                fullWidth
+                margin="normal"
+                type={signUpPasswordVisible ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setSignUpPasswordVisible(!signUpPasswordVisible)}
+                        edge="end"
+                      >
+                        {signUpPasswordVisible ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
+                label="Confirm Password"
+                fullWidth
+                margin="normal"
+                type={confirmPasswordVisible ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                        edge="end"
+                      >
+                        {confirmPasswordVisible ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                disabled={isLoading}
+                sx={{ marginTop: 2 }}
+              >
+                {isLoading ? "Loading..." : "Sign Up"}
+              </Button>
+            </form>
+          )}
+        </Box>
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 }
