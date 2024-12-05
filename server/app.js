@@ -7,7 +7,7 @@ import cors from 'cors';
 config();
 
 import newsRoutes from './routes/newsRoutes.js';
-import authRoutes from './routes/authRoutes.js';
+
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(json());
 
-app.use('/auth', authRoutes);
+
 app.use('/api/news', newsRoutes);
 
 
