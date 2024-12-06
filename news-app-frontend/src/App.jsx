@@ -1,71 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate
 } from 'react-router-dom';
+import { CircularProgress, Box } from '@mui/material';
+import { AuthProvider } from '../context/AuthContext';
+
+import ProtectedRoute from './components/ProtectedRoute';
+import Home from './pages/Home';
 import { LoginForm } from './components/Auth/LoginForm';
-import Dash from './pages/Dash';
-import { auth }   from './components/firebase'; // Firebase auth import
-import { onAuthStateChanged } from 'firebase/auth';
 
+// const LoginForm = lazy(() => import('./components/Auth/LoginForm'));
+// // const Home = lazy(() => import('./pages/Home'));
+// const Navbar = lazy(() => import('./components/NavBar'));
 
-const App = () => {
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Check session using Firebase's onAuthStateChanged
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setSession(user);  // Set user session if logged in
-      } else {
-        setSession(null);   // Set null session if not logged in
-      }
-      setLoading(false);
-    });
-
-    // Cleanup the listener when the component unmounts
-    return () => unsubscribe();
-  }, []);
-
-  // Protected Route Component
-  const ProtectedRoute = ({ children }) => {
-    if (loading) {
-      return <div>Loading...</div>;
-    }
-
-    // Redirect to login if session is null
-    return session ? children : <Navigate to="/auth" replace />;
-  };
-
+function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/auth" element={<LoginForm />} />
-
-        {/* Protected Routes */}
-        <Route
-          path="/dash"
-          element={
-            <ProtectedRoute>
-              <Dash />
-            </ProtectedRoute>
+    <AuthProvider>
+      <Router>
+        <Suspense 
+          fallback={
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+              <CircularProgress />
+            </Box>
           }
-        />
-
-        {/* Default Route */}
-        <Route
-          path="/"
-          element={
-            session ? <Navigate to="/dash" /> : <Navigate to="/auth" />
-          }
-        />
-      </Routes>
-    </Router>
+        >
+          <Routes>
+            <Route path="/login" element={<LoginForm />} />
+            <Route 
+              path="/home" 
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </Suspense>
+      </Router>
+    </AuthProvider>
   );
-};
+}
 
 export default App;

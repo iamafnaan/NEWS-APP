@@ -14,8 +14,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import { Visibility, VisibilityOff, Mail, Lock } from "@mui/icons-material";
-import { auth, googleProvider, signInWithPopup } from "../firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { useAuth } from '../../../context/AuthContext';
 
 const theme = createTheme({
   palette: {
@@ -38,6 +37,8 @@ export function LoginForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState(0);
+  
+  const { login, register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
   const handleTabChange = (event, newValue) => {
@@ -55,10 +56,10 @@ export function LoginForm() {
     setError("");
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await login(email, password);
       navigate("/dashboard");
     } catch (err) {
-      setError("Invalid email or password.");
+      setError(err.message);
     } finally {
       setIsLoading(false);
     }
@@ -77,12 +78,22 @@ export function LoginForm() {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      await register(email, password);
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Handle Google Sign In
+  const handleGoogleSignIn = async () => {
+    try {
+      await loginWithGoogle();
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -103,7 +114,7 @@ export function LoginForm() {
       >
         <Box maxWidth={400} width="100%" bgcolor="background.paper" borderRadius={4} p={4} boxShadow={10}>
           <Typography variant="h4" align="center" gutterBottom>
-            Welcome to the App
+            Welcome to the News-App
           </Typography>
           <Typography variant="body2" align="center" color="textSecondary" gutterBottom>
             Sign in or register to get started
@@ -167,6 +178,15 @@ export function LoginForm() {
                 sx={{ marginTop: 2 }}
               >
                 {isLoading ? "Loading..." : "Sign In"}
+              </Button>
+              <Button
+                fullWidth
+                variant="outlined"
+                color="primary"
+                onClick={handleGoogleSignIn}
+                sx={{ marginTop: 2 }}
+              >
+                Sign in with Google
               </Button>
             </form>
           )}
