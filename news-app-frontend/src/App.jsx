@@ -37,7 +37,7 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Navigate to="/home" />} />
           </Routes>
         </Suspense>
       </Router>

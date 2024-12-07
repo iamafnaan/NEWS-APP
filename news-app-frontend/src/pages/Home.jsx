@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { 
-   
   Typography, 
   Container, 
   CircularProgress, 
-  Alert 
+  Alert ,
+  
 } from '@mui/material';
-import Grid from '@mui/material/Grid';
+
+import {Grid2 }from '@mui/material';
 import NewsService from '../services/newsService';
 import ArticleCard from '../components/ArticleCard';
+import Navbar from '../components/NavBar';
 import { useAuth } from '../../context/AuthContext';
 
 const Home = () => {
@@ -37,35 +39,32 @@ const Home = () => {
     }
   }, [currentUser]);
 
-  if (loading) {
-    return (
-      <Container>
-        <CircularProgress />
-      </Container>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container>
-        <Alert severity="error">{error}</Alert>
-      </Container>
-    );
-  }
-
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Today's Top Headlines
-      </Typography>
-      <Grid container spacing={3}>
-        {articles.map((article, index) => (
-          <Grid item key={index} xs={12} sm={6} md={4}>
-            <ArticleCard article={article} />
-          </Grid>
-        ))}
-      </Grid>
-    </Container>
+    <>
+      <Navbar />
+      <Container sx={{ mt: 4 }}>
+        {loading ? (
+          <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <CircularProgress />
+          </Container>
+        ) : error ? (
+          <Alert severity="error">{error}</Alert>
+        ) : (
+          <>
+            <Typography variant="h4" gutterBottom>
+              Today's Top Headlines
+            </Typography>
+            <Grid2 container spacing={2} disableEqualOverflow>
+              {articles.map((article, index) => (
+                <Grid2 key={index} xs={12} sm={6} md={4}>
+                  <ArticleCard article={article} />
+                </Grid2>
+              ))}
+            </Grid2>
+          </>
+        )}
+      </Container>
+    </>
   );
 };
 

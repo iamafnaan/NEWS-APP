@@ -57,7 +57,7 @@ export function LoginForm() {
 
     try {
       await login(email, password);
-      navigate("/dashboard");
+      navigate("/home");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -79,7 +79,7 @@ export function LoginForm() {
 
     try {
       await register(email, password);
-      navigate("/dashboard");
+      navigate("/home");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -91,7 +91,7 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     try {
       await loginWithGoogle();
-      navigate("/dashboard");
+      navigate("/home");
     } catch (err) {
       setError(err.message);
     }
