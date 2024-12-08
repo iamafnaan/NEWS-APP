@@ -1,13 +1,23 @@
-
 import React from "react";
-import { AppBar, Toolbar, Typography, Button, IconButton, Box, Container, Tooltip } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Box,
+  Container,
+  Tooltip,
+  TextField,
+  InputAdornment,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
 import LogoutIcon from "@mui/icons-material/Logout";
+import SearchIcon from "@mui/icons-material/Search";
 
-const Navbar = () => {
+const Navbar = ({ searchQuery, handleSearch }) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -39,6 +49,7 @@ const Navbar = () => {
             minHeight: 64,
           }}
         >
+          {/* Logo and App Title */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Typography
               variant="h5"
@@ -53,10 +64,30 @@ const Navbar = () => {
             </Typography>
           </Box>
 
+          {/* Search Bar */}
+          <Box sx={{ flexGrow: 1, mx: 3 }}>
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Search news..."
+              fullWidth
+              value={searchQuery}
+              onChange={handleSearch}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                style: { backgroundColor: "white", borderRadius: 4 },
+              }}
+            />
+          </Box>
+
+          {/* Buttons: Theme Toggle and Logout */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Tooltip title="Toggle Theme">
               <IconButton color="inherit">
-                {/* Add your theme toggle logic here */}
                 <Brightness4Icon />
               </IconButton>
             </Tooltip>

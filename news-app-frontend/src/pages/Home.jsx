@@ -4,18 +4,24 @@ import NewsService from "../services/newsService";
 import ArticleCard from "../components/ArticleCard";
 import Navbar from "../components/NavBar";
 import { useAuth } from "../../context/AuthContext";
-import {Grid2} from "@mui/material";
+import {Grid2} from "@mui/material"; 
 
 const Home = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { currentUser } = useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const response = await NewsService.fetchTopHeadlines();
+
+      // Fetch top headlines by default or perform a search based on query
+      const response = searchQuery
+        ? await NewsService.searchNews(searchQuery)
+        : await NewsService.fetchTopHeadlines();
+      
       setArticles(response.articles || []);
       setError(null);
     } catch (err) {
@@ -26,23 +32,29 @@ const Home = () => {
     }
   };
 
+  // Fetch articles on initial load or when search query changes
   useEffect(() => {
     if (currentUser) {
       fetchArticles();
     }
-  }, [currentUser]);
+  }, [currentUser, searchQuery]);
+
+  const handleSearch = (event) => {
+    setSearchQuery(event.target.value);
+  };
 
   return (
     <Box
       sx={{
         background: "linear-gradient(to bottom, #4a90e2, #6a3b8f)",
-        color: "white",
+        color: "black",
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      <Navbar />
+      {/* Pass search functionality to Navbar */}
+      <Navbar searchQuery={searchQuery} handleSearch={handleSearch} />
       <Container sx={{ mt: 4, flexGrow: 1 }}>
         {loading ? (
           <Container sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -62,7 +74,7 @@ const Home = () => {
                 color: "#ffffff",
               }}
             >
-              Today's Top Headlines
+              {searchQuery ? `Search Results for "${searchQuery}"` : "Today's Top Headlines"}
             </Typography>
             <Grid2 container spacing={4} justifyContent="center">
               {articles.map((article, index) => (
