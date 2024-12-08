@@ -42,7 +42,7 @@ const Navbar = () => {
               display: { xs: 'none', sm: 'block' }
             }}
           >
-            News Insights
+            News App
           </Typography>
           
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
