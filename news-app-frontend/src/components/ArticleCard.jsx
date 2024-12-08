@@ -1,110 +1,78 @@
-// // components/ArticleCard.jsx
-// import React from "react";
-// import { Card, CardMedia, CardContent, Typography, CardActions, Button } from "@mui/material";
-
-// const ArticleCard = ({ article }) => {
-//   return (
-//     <Card sx={{ maxWidth: 345, m: 2 }}>
-//       <CardMedia
-//         component="img"
-//         height="140"
-//         image={article.urlToImage || "https://via.placeholder.com/150"}
-//         alt={article.title}
-//       />
-//       <CardContent>
-//         <Typography variant="h6" gutterBottom>
-//           {article.title}
-//         </Typography>
-//         <Typography variant="body2" color="text.secondary">
-//           {article.description}
-//         </Typography>
-//       </CardContent>
-//       <CardActions>
-//         <Button
-//           size="small"
-//           color="primary"
-//           onClick={() => window.open(article.url, "_blank")}
-//         >
-//           Read More
-//         </Button>
-//       </CardActions>
-//     </Card>
-//   );
-// };
-
-// export default ArticleCard;
 import React from "react";
-import { 
-  Card, 
-  CardMedia, 
-  CardContent, 
-  Typography, 
-  CardActions, 
-  Button, 
-  Box 
-} from "@mui/material";
+import { Card, CardMedia, CardContent, Typography, CardActions, Button } from "@mui/material";
 
 const ArticleCard = ({ article }) => {
-  // Truncate description to ensure consistent text length
-  const truncateText = (text, maxLength = 150) => {
-    if (!text) return '';
-    return text.length > maxLength 
-      ? text.substring(0, maxLength) + '...' 
-      : text;
-  };
-
   return (
-    <Card 
-      sx={{ 
-        height: '100%', 
-        display: 'flex', 
-        flexDirection: 'column',
-        maxWidth: 345,
-        margin: 2
+    <Card
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        maxWidth: 360,
+        minWidth: 280,
+        margin: 2,
+        borderRadius: 3,
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        transition: "transform 0.3s, box-shadow 0.3s",
+        backgroundColor: "#ffffff",
+        "&:hover": {
+          transform: "translateY(-8px)",
+          boxShadow: "0 6px 20px rgba(0, 0, 0, 0.15)",
+        },
       }}
     >
       <CardMedia
         component="img"
         height="200"
-        image={article.urlToImage || "https://via.placeholder.com/350x200"}
+        image={article.urlToImage || "https://via.placeholder.com/360x200?text=No+Image"}
         alt={article.title}
-        sx={{ objectFit: 'cover' }}
+        sx={{
+          borderRadius: "3px 3px 0 0",
+          objectFit: "cover",
+        }}
       />
-      
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography 
-          variant="h6" 
-          component="div" 
-          sx={{ 
-            mb: 1, 
-            height: '3rem', 
-            overflow: 'hidden', 
-            textOverflow: 'ellipsis' 
+      <CardContent sx={{ flexGrow: 1, padding: 2 }}>
+        <Typography
+          variant="h6"
+          component="h2"
+          sx={{
+            fontWeight: "bold",
+            fontSize: "1.1rem",
+            marginBottom: 1,
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
           }}
         >
-          {truncateText(article.title, 60)}
+          {article.title || "Untitled Article"}
         </Typography>
-        
-        <Typography 
-          variant="body2" 
-          color="text.secondary"
-          sx={{ 
-            height: '4.5rem', 
-            overflow: 'hidden', 
-            textOverflow: 'ellipsis' 
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
           }}
         >
-          {truncateText(article.description)}
+          {article.description || "No description available."}
         </Typography>
       </CardContent>
-      
-      <CardActions>
+      <CardActions sx={{ padding: 2, justifyContent: "flex-end" }}>
         <Button
           size="small"
           color="primary"
           variant="contained"
-          fullWidth
           onClick={() => window.open(article.url, "_blank")}
+          sx={{
+            textTransform: "none",
+            borderRadius: 2,
+            fontWeight: "bold",
+          }}
         >
           Read More
         </Button>
