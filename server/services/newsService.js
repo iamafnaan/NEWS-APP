@@ -31,9 +31,7 @@ class NewsService {
       const apiKey = process.env.NEWS_API_KEY;
 
       // Determine parameters for the request
-      const params = country === 'in'
-        ? { q: query, sources: SOURCES.INDIA, apiKey }
-        : { q: query, country: 'us', apiKey };
+      const params ={ q: query,  apiKey };
 
       // Make the API call
       const response = await axios.get(`${BASE_URL}/everything`, { params });
