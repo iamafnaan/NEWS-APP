@@ -59,7 +59,7 @@ const ArticleCard = ({ article }) => {
             WebkitBoxOrient: "vertical",
           }}
         >
-          {article.description || "No description available."}
+          {/* {article.description || "No description available."} */}
         </Typography>
       </CardContent>
       <CardActions sx={{ padding: 2, justifyContent: "flex-end" }}>

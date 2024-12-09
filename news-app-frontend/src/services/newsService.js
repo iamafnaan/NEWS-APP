@@ -15,10 +15,10 @@ class NewsService {
     }
   }
 
-  static async searchNews(query, country = 'us') {
+  static async searchNews(query) {
     try {
       const response = await axios.get(`${BASE_URL}/query`, { 
-        params: { q: query, country } 
+        params: { q: query } 
       });
       return response.data;
     } catch (error) {
