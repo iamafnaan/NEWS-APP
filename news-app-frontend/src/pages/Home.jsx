@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Container, CircularProgress, Alert, Box } from "@mui/material";
+import { Box, Typography, Container, CircularProgress, Grid } from "@mui/material";
 import NewsService from "../services/newsService";
-import ArticleCard from "../components/ArticleCard";
-import Navbar from "../components/NavBar";
 import { useAuth } from "../../context/AuthContext";
-import {Grid2} from "@mui/material"; 
+import NavBar from "../components/NavBar";
+import ArticleCard from "../components/ArticleCard";
 
 const Home = () => {
   const [articles, setArticles] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { currentUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const { currentUser } = useAuth();
 
-  const fetchArticles = async () => {
+  const fetchArticles = async (query = "") => {
     try {
       setLoading(true);
-
-      // Fetch top headlines by default or perform a search based on query
-      const response = searchQuery
-        ? await NewsService.searchNews(searchQuery)
-        : await NewsService.fetchTopHeadlines();
-      
+      let response;
+      if (query) {
+        response = await NewsService.searchNews(query);
+      } else {
+        response = await NewsService.fetchTopHeadlines();
+      }
       setArticles(response.articles || []);
       setError(null);
     } catch (err) {
@@ -32,58 +31,101 @@ const Home = () => {
     }
   };
 
-  // Fetch articles on initial load or when search query changes
   useEffect(() => {
     if (currentUser) {
       fetchArticles();
     }
-  }, [currentUser, searchQuery]);
+  }, [currentUser]);
 
-  const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
+  const handleSearchSubmit = (query) => {
+    setSearchQuery(query);
+    fetchArticles(query);
   };
 
   return (
     <Box
       sx={{
-        background: "linear-gradient(to bottom, #4a90e2, #6a3b8f)",
-        color: "black",
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
+        backgroundColor: '#F3F3F3',
+        minHeight: '100vh',
+        fontFamily: '"Neue Haas Grotesk", Arial, sans-serif',
       }}
     >
-      {/* Pass search functionality to Navbar */}
-      <Navbar searchQuery={searchQuery} handleSearch={handleSearch} />
-      <Container sx={{ mt: 4, flexGrow: 1 }}>
+      <NavBar onSearchSubmit={handleSearchSubmit} />
+
+      <Container maxWidth="xl" sx={{ pt: 12, position: 'relative' }}>
+        {/* Title */}
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontWeight: 700,
+            mb: 5,
+            color: '#333',
+            textAlign: 'center',
+          }}
+        >
+          {searchQuery
+            ? `Search Results for "${searchQuery}"`
+            : "Today's Top Headlines"}
+        </Typography>
+
+        {/* Loading/Error/Articles */}
         {loading ? (
-          <Container sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+          <Box display="flex" justifyContent="center" alignItems="center" height="50vh">
             <CircularProgress />
-          </Container>
+          </Box>
         ) : error ? (
-          <Alert severity="error">{error}</Alert>
+          <Typography color="error">{error}</Typography>
         ) : (
-          <>
-            <Typography
-              variant="h4"
-              gutterBottom
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1px 1fr', // Two equal columns with a partition line
+              gap: '20px',
+              position: 'relative',
+            }}
+          >
+            {/* Left column */}
+            <Box
               sx={{
-                fontWeight: "bold",
-                textAlign: "center",
-                marginBottom: 4,
-                color: "#ffffff",
+                display: 'grid',
+                gap: '20px',
+                gridAutoRows: '1fr', // Ensures all articles have the same height
               }}
             >
-              {searchQuery ? `Search Results for "${searchQuery}"` : "Today's Top Headlines"}
-            </Typography>
-            <Grid2 container spacing={4} justifyContent="center">
-              {articles.map((article, index) => (
-                <Grid2 item xs={12} sm={6} md={4} lg={3} key={index}>
-                  <ArticleCard article={article} />
-                </Grid2>
-              ))}
-            </Grid2>
-          </>
+              {articles
+                .filter((_, index) => index % 2 === 0) // Left side articles (even indices)
+                .map((article, index) => (
+                  <ArticleCard key={`left-${index}`} article={article} />
+                ))}
+            </Box>
+
+            {/* Vertical partition line */}
+            <Box
+              sx={{
+                backgroundColor: '#D0D0D0',
+                width: '1px',
+                height: '100%',
+                position: 'relative',
+                zIndex: 1,
+              }}
+            />
+
+            {/* Right column */}
+            <Box
+              sx={{
+                display: 'grid',
+                gap: '20px',
+                gridAutoRows: '1fr', // Ensures all articles have the same height
+              }}
+            >
+              {articles
+                .filter((_, index) => index % 2 !== 0) // Right side articles (odd indices)
+                .map((article, index) => (
+                  <ArticleCard key={`right-${index}`} article={article} />
+                ))}
+            </Box>
+          </Box>
         )}
       </Container>
     </Box>

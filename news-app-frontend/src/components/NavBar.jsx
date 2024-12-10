@@ -1,23 +1,22 @@
-import React from "react";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  IconButton,
-  Box,
-  Container,
-  Tooltip,
-  TextField,
-  InputAdornment,
+import React, { useState } from "react";
+import { 
+  AppBar, 
+  Toolbar, 
+  Typography, 
+  IconButton, 
+  Box, 
+  TextField, 
+  Slide 
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import LogoutIcon from "@mui/icons-material/Logout";
 import SearchIcon from "@mui/icons-material/Search";
+import LogoutIcon from "@mui/icons-material/Logout";
+import LogoImage from "../../src/assets/Logo.jpeg";
 
-const Navbar = ({ searchQuery, handleSearch }) => {
+const NavBar = ({ onSearchSubmit }) => {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -30,90 +29,113 @@ const Navbar = ({ searchQuery, handleSearch }) => {
     }
   };
 
+  const handleSearchToggle = () => {
+    setIsSearchOpen(!isSearchOpen);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      onSearchSubmit(searchQuery);
+      setIsSearchOpen(false);
+    }
+  };
+
   return (
-    <AppBar
-      position="sticky"
-      sx={{
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        color: "white",
-      }}
-      elevation={4}
-    >
-      <Container maxWidth="lg">
-        <Toolbar
-          disableGutters
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            minHeight: 64,
-          }}
-        >
-          {/* Logo and App Title */}
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Typography
-              variant="h5"
-              component="div"
-              sx={{
-                fontWeight: 600,
+    <>
+      <AppBar 
+        position="fixed" 
+        sx={{ 
+          backgroundColor: '#000', 
+          color: '#fff', 
+          fontFamily: '"Manrope","Times New Roman", Times, serif',
+          width: '100vw',
+        }}
+      >
+        <Toolbar sx={{ justifyContent: 'space-between', px: 2 }}>
+          {/* Logo and Title */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <img
+              src={LogoImage}
+              alt="Logo"
+              style={{
+                width: '42px',
+                height: '40px',
+                objectFit: 'contain',
+                borderRadius: '50%',
+              }}
+            />
+            <Typography 
+              variant="h5" 
+              component="div" 
+              sx={{ 
+                fontWeight: 700, 
                 letterSpacing: 1,
-                mr: 2,
+                fontFamily: '"Times New Roman", Times, serif' 
               }}
             >
-              News App
+              Global Gazette
             </Typography>
           </Box>
 
-          {/* Search Bar */}
-          <Box sx={{ flexGrow: 1, mx: 3 }}>
-            <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Search news..."
-              fullWidth
-              value={searchQuery}
-              onChange={handleSearch}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                style: { backgroundColor: "white", borderRadius: 4 },
-              }}
-            />
-          </Box>
-
-          {/* Buttons: Theme Toggle and Logout */}
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Tooltip title="Toggle Theme">
-              <IconButton color="inherit">
-                <Brightness4Icon />
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Logout">
-              <Button
-                color="inherit"
-                startIcon={<LogoutIcon />}
-                onClick={handleLogout}
-                variant="outlined"
-                sx={{
-                  borderColor: "rgba(255,255,255,0.5)",
-                  "&:hover": {
-                    borderColor: "white",
-                    backgroundColor: "rgba(255,255,255,0.1)",
-                  },
-                }}
-              >
-                Logout
-              </Button>
-            </Tooltip>
+          {/* Search and Logout Icons */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton 
+              color="inherit" 
+              onClick={handleSearchToggle}
+              sx={{ mr: 2 }}
+            >
+              <SearchIcon />
+            </IconButton>
+            
+            <IconButton 
+              color="inherit" 
+              onClick={handleLogout}
+            >
+              <LogoutIcon />
+            </IconButton>
           </Box>
         </Toolbar>
-      </Container>
-    </AppBar>
+      </AppBar>
+
+      {/* Search Input Field */}
+      <Slide direction="down" in={isSearchOpen} mountOnEnter unmountOnExit>
+        <Box 
+          component="form" 
+          onSubmit={handleSearchSubmit}
+          sx={{ 
+            width: '100%', 
+            backgroundColor: '#f4f4f4', 
+            p: 2, 
+            display: 'flex', 
+            justifyContent: 'center' 
+          }}
+        >
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Search articles..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{ 
+              maxWidth: 600, 
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: 0,
+                backgroundColor: '#fff' 
+              } 
+            }}
+            InputProps={{
+              endAdornment: (
+                <IconButton type="submit">
+                  <SearchIcon />
+                </IconButton>
+              )
+            }}
+          />
+        </Box>
+      </Slide>
+    </>
   );
 };
 
-export default Navbar;
+export default NavBar;

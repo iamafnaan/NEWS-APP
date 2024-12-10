@@ -1,83 +1,102 @@
 import React from "react";
-import { Card, CardMedia, CardContent, Typography, CardActions, Button } from "@mui/material";
+import { 
+  Box, 
+  Typography 
+} from "@mui/material";
+import DefaultImage from "../../src/assets/GoogleImage.png";
 
 const ArticleCard = ({ article }) => {
+  const handleCardClick = () => {
+    window.open(article.url, "_blank");
+  };
+
   return (
-    <Card
+    <Box
       sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        maxWidth: 360,
-        minWidth: 280,
-        margin: 2,
-        borderRadius: 3,
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        transition: "transform 0.3s, box-shadow 0.3s",
-        backgroundColor: "#ffffff",
-        "&:hover": {
-          transform: "translateY(-8px)",
-          boxShadow: "0 6px 20px rgba(0, 0, 0, 0.15)",
+        cursor: 'pointer',
+        transition: 'transform 0.2s',
+        border: '1px solid #E0E0E0',
+        boxShadow: 'none',
+        '&:hover': {
+          transform: 'scale(1.02)',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
         },
+        mb: 4,
+        backgroundColor: 'white'
       }}
+      onClick={handleCardClick}
     >
-      <CardMedia
-        component="img"
-        height="200"
-        image={article.urlToImage || "https://via.placeholder.com/360x200?text=No+Image"}
-        alt={article.title}
+      <Box
         sx={{
-          borderRadius: "3px 3px 0 0",
-          objectFit: "cover",
+          height: 250,
+          width: '100%',
+          overflow: 'hidden'
         }}
-      />
-      <CardContent sx={{ flexGrow: 1, padding: 2 }}>
-        <Typography
-          variant="h6"
-          component="h2"
-          sx={{
-            fontWeight: "bold",
-            fontSize: "1.1rem",
-            marginBottom: 1,
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
+      >
+        <img
+          src={article.urlToImage || DefaultImage}
+          alt={article.title}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            filter: !article.urlToImage ? 'grayscale(50%)' : 'none'
+          }}
+        />
+      </Box>
+      
+      <Box sx={{ p: 2 }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            fontWeight: 700, 
+            mb: 1,
+            fontSize: '1.1rem',
+            lineHeight: 1.3
           }}
         >
           {article.title || "Untitled Article"}
         </Typography>
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          sx={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 3,
-            WebkitBoxOrient: "vertical",
+        
+        <Typography 
+          variant="body2" 
+          color="text.secondary"
+          sx={{ 
+            mb: 2,
+            height: 60,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis'
           }}
         >
-          {/* {article.description || "No description available."} */}
+          {article.description || "No description available."}
         </Typography>
-      </CardContent>
-      <CardActions sx={{ padding: 2, justifyContent: "flex-end" }}>
-        <Button
-          size="small"
-          color="primary"
-          variant="contained"
-          onClick={() => window.open(article.url, "_blank")}
-          sx={{
-            textTransform: "none",
-            borderRadius: 2,
-            fontWeight: "bold",
+        
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center' 
           }}
         >
-          Read More
-        </Button>
-      </CardActions>
-    </Card>
+          <Typography 
+            variant="caption" 
+            color="text.secondary"
+          >
+            {new Date(article.publishedAt).toLocaleDateString()}
+          </Typography>
+          
+          <Typography 
+            variant="caption" 
+            sx={{ 
+              color: '#666', 
+              fontStyle: 'italic'
+            }}
+          >
+            {article.source.name}
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 
