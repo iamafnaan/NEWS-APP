@@ -1,30 +1,19 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Alert,
-  TextField,
-  Button,
-  Tab,
-  Tabs,
-  Typography,
-  Box,
-  InputAdornment,
-  IconButton,
-  createTheme,
-  ThemeProvider,
+import { 
+  Alert, 
+  TextField, 
+  Button, 
+  Tab, 
+  Tabs, 
+  Typography, 
+  Box, 
+  InputAdornment, 
+  IconButton 
 } from "@mui/material";
 import { Visibility, VisibilityOff, Mail, Lock } from "@mui/icons-material";
 import { useAuth } from '../../../context/AuthContext';
-
-const theme = createTheme({
-  palette: {
-    primary: { main: "#3f51b5" },
-    secondary: { main: "#ff4081" },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  },
-});
+import Logo from "../../../src/assets/Logo.jpeg"
 
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +38,6 @@ export function LoginForm() {
     setConfirmPassword("");
   };
 
-  // Handle Sign In
   const handleSignIn = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -65,7 +53,6 @@ export function LoginForm() {
     }
   };
 
-  // Handle Sign Up
   const handleSignUp = async (event) => {
     event.preventDefault();
     setIsLoading(true);
@@ -87,7 +74,6 @@ export function LoginForm() {
     }
   };
 
-  // Handle Google Sign In
   const handleGoogleSignIn = async () => {
     try {
       await loginWithGoogle();
@@ -98,33 +84,141 @@ export function LoginForm() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <Box
+    <Box 
+      sx={{
+        display: 'flex',
+        height: '100vh',
+        width: '100vw',
+        margin: 0,
+        padding: 0,
+        overflow: 'hidden',
+        boxSizing: 'border-box',
+      }}
+    >
+      {/* Left Side - Web App Name and Logo */}
+      <Box 
         sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          width: '50%',
+          height: '100%',
+          backgroundColor: 'black',
+          color: 'white',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 0,
+          boxSizing: 'border-box',
         }}
       >
-        <Box maxWidth={400} width="100%" bgcolor="background.paper" borderRadius={4} p={4} boxShadow={10}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Welcome to the News-App
+        <Box 
+          sx={{
+            width: 200,
+            height: 200,
+            backgroundColor: 'white',
+            borderRadius: '50%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginBottom: 3,
+            overflow: 'hidden',
+          }}
+        >
+          <img 
+            src={Logo} 
+            alt="Global Gazette Logo" 
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+        </Box>
+        <Typography 
+          variant="h2" 
+          sx={{ 
+            fontWeight: 'bold', 
+            textAlign: 'center',
+            margin: 0,
+            marginBottom: 1,
+          }}
+        >
+          Global Gazette
+        </Typography>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            textAlign: 'center', 
+            color: 'grey.400',
+            margin: 0,
+          }}
+        >
+          Your Window to the World
+        </Typography>
+      </Box>
+
+      {/* Right Side - Login/Signup Form */}
+      <Box 
+        sx={{
+          width: '50%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'white',
+          padding: 0,
+          boxSizing: 'border-box',
+        }}
+      >
+        <Box maxWidth={400} width="100%">
+          <Typography 
+            variant="h4" 
+            align="center" 
+            gutterBottom
+            sx={{ fontWeight: 'bold', margin: 0 }}
+          >
+            Welcome Back
           </Typography>
-          <Typography variant="body2" align="center" color="textSecondary" gutterBottom>
-            Sign in or register to get started
+          <Typography 
+            variant="body1" 
+            align="center" 
+            color="textSecondary" 
+            gutterBottom
+            sx={{ margin: 0 }}
+          >
+            Sign in or register to continue
           </Typography>
 
-          {error && <Alert severity="error">{error}</Alert>}
+          {error && <Alert severity="error" sx={{ marginBottom: 2 }}>{error}</Alert>}
 
-          <Tabs value={activeTab} onChange={handleTabChange} centered>
-            <Tab label="Login" />
-            <Tab label="Register" />
+          <Tabs 
+            value={activeTab} 
+            onChange={handleTabChange} 
+            centered
+            sx={{
+              '& .MuiTabs-indicator': {
+                backgroundColor: 'black',
+              },
+            }}
+          >
+            <Tab 
+              label="Login" 
+              sx={{
+                '&.Mui-selected': {
+                  color: 'black',
+                  fontWeight: 'bold',
+                },
+              }}
+            />
+            <Tab 
+              label="Register" 
+              sx={{
+                '&.Mui-selected': {
+                  color: 'black',
+                  fontWeight: 'bold',
+                },
+              }}
+            />
           </Tabs>
 
           {activeTab === 0 && (
@@ -173,18 +267,30 @@ export function LoginForm() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                color="primary"
+                sx={{ 
+                  marginTop: 2,
+                  backgroundColor: 'black',
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: 'grey.800',
+                  },
+                }}
                 disabled={isLoading}
-                sx={{ marginTop: 2 }}
               >
                 {isLoading ? "Loading..." : "Sign In"}
               </Button>
               <Button
                 fullWidth
                 variant="outlined"
-                color="primary"
+                sx={{ 
+                  marginTop: 2,
+                  borderColor: 'black',
+                  color: 'black',
+                  '&:hover': {
+                    backgroundColor: 'grey.100',
+                  },
+                }}
                 onClick={handleGoogleSignIn}
-                sx={{ marginTop: 2 }}
               >
                 Sign in with Google
               </Button>
@@ -262,9 +368,15 @@ export function LoginForm() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                color="primary"
+                sx={{ 
+                  marginTop: 2,
+                  backgroundColor: 'black',
+                  color: 'white',
+                  '&:hover': {
+                    backgroundColor: 'grey.800',
+                  },
+                }}
                 disabled={isLoading}
-                sx={{ marginTop: 2 }}
               >
                 {isLoading ? "Loading..." : "Sign Up"}
               </Button>
@@ -272,6 +384,6 @@ export function LoginForm() {
           )}
         </Box>
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 }

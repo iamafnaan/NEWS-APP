@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   AppBar, 
   Toolbar, 
@@ -17,8 +17,16 @@ import LogoImage from "../../src/assets/Logo.jpeg";
 const NavBar = ({ onSearchSubmit }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const { logout } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -36,10 +44,21 @@ const NavBar = ({ onSearchSubmit }) => {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      onSearchSubmit(searchQuery);
+      navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
       setIsSearchOpen(false);
     }
   };
+
+  const formatDateTime = (date) => {
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); 
+    return {
+      date: date.toLocaleDateString(undefined, options),
+      time: time
+    };
+  };
+
+  const { date, time } = formatDateTime(currentDateTime);
 
   return (
     <>
@@ -52,8 +71,13 @@ const NavBar = ({ onSearchSubmit }) => {
           width: '100vw',
         }}
       >
-        <Toolbar sx={{ justifyContent: 'space-between', px: 2 }}>
-          {/* Logo and Title */}
+        <Toolbar sx={{ 
+          justifyContent: 'space-between', 
+          px: 2, 
+          display: 'flex', 
+          alignItems: 'center' 
+        }}>
+          
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <img
               src={LogoImage}
@@ -78,12 +102,11 @@ const NavBar = ({ onSearchSubmit }) => {
             </Typography>
           </Box>
 
-          {/* Search and Logout Icons */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <IconButton 
               color="inherit" 
               onClick={handleSearchToggle}
-              sx={{ mr: 2 }}
             >
               <SearchIcon />
             </IconButton>
@@ -95,10 +118,31 @@ const NavBar = ({ onSearchSubmit }) => {
               <LogoutIcon />
             </IconButton>
           </Box>
+
+          
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'flex-end', 
+              position: 'absolute', 
+              right: 8, 
+              top: '50%', 
+              transform: 'translateY(-50%)',
+              mr: 17
+            }}
+          >
+            <Typography variant="body2" sx={{ fontSize: '0.85rem', color: '#ccc' }}>
+              {date}
+            </Typography>
+            <Typography variant="body1" sx={{ fontSize: '1rem', fontWeight: 500 }}>
+              {time}
+            </Typography>
+          </Box>
         </Toolbar>
       </AppBar>
 
-      {/* Search Input Field */}
+      
       <Slide direction="down" in={isSearchOpen} mountOnEnter unmountOnExit>
         <Box 
           component="form" 
@@ -106,7 +150,7 @@ const NavBar = ({ onSearchSubmit }) => {
           sx={{ 
             width: '100%', 
             backgroundColor: '#f4f4f4', 
-            p: 2, 
+            paddingTop: 10, 
             display: 'flex', 
             justifyContent: 'center' 
           }}
