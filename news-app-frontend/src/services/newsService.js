@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL =  'http://localhost:8080/api/news';
+const BASE_URL =  'https://servernews.vercel.app/api/news';
 
 class NewsService {
   static async fetchTopHeadlines(country = 'us') {
