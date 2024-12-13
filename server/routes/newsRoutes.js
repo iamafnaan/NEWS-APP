@@ -1,9 +1,9 @@
 
 import { Router } from 'express';
+
 import NewsService from '../services/newsService.js';
 
 const router = Router();
-
 // Route for top headlines by country
 router.get('/top-headlines', async (req, res) => {
   try {

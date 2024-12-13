@@ -3,6 +3,7 @@ import express, { json } from 'express';
 import { config } from 'dotenv';
 import cors from 'cors';
 
+
 // Load environment variables
 config();
 
@@ -10,7 +11,7 @@ import newsRoutes from './routes/newsRoutes.js';
 
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT =  8080;
 
 app.use(cors());
 app.use(json());
@@ -32,4 +33,4 @@ app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 
-module.exports = app;
+export default app;
